@@ -1,105 +1,111 @@
 const form = document.getElementById("todoform");
-const todoInput = document.getElementById("newtodo");
-const todosListEl = document.getElementById("todos-list");
+const linkInput = document.getElementById("newlink");
+const linksListEl = document.getElementById("links-list");
 const deleteAllBtn = document.getElementById("delete-all-btn");
 const tabBtn = document.getElementById("tab-btn");
 
-let todos = [];
+let links = [];
 
+//Submit eventlisterer
 form.addEventListener("submit", (e) => {
 	e.preventDefault();
 
-	saveTodo();
-	renderTodos();
-	localStorage.setItem("todos", JSON.stringify(todos));
+	saveLink();
+	renderLinks();
+	localStorage.setItem("links", JSON.stringify(links));
 });
 
-const saveTodo = () => {
-	const todoValue = todoInput.value;
+//function that removes extra https from url.
+function removeHttp(url) {
+	return url.replace(/^https?:\/\//, "");
+}
 
-	const isEmpty = todoValue === "";
+//Function that allows us save our links using the input
+const saveLink = () => {
+	const linkValue = removeHttp(linkInput.value);
+	console.log(linkValue);
+	const isEmpty = linkValue === "";
 
 	if (isEmpty) {
 		alert("Input is empty");
 	} else {
-		todos.push({
-			value: todoValue,
+		links.push({
+			value: linkValue,
 			id: Math.random(),
 		});
-		todoInput.value = "";
+		linkInput.value = "";
 	}
-	console.log(todos);
+	console.log(links);
 };
 
-const renderTodos = () => {
-	if (todos.length === 0) {
-		todosListEl.innerHTML = `<center>No links here...</center>`;
+//Function that renders our links to the page
+const renderLinks = () => {
+	const prefix = "https://";
+	if (links.length === 0) {
+		linksListEl.innerHTML = `<center>No links here...</center>`;
 		return;
 	}
-	todosListEl.innerHTML = "";
+	linksListEl.innerHTML = "";
 
-	todos.forEach((todo, index) => {
-		todosListEl.innerHTML += `
-		<div class="todo" id=${index}>
+	links.forEach((link, index) => {
+		linksListEl.innerHTML += `
+		<div class="link" id=${index}>
 			
-					<a class="url-link" href=${todo.value} target="_blank" rel="noopener">${todo.value}</a>
-					<button data-action="delete" class="delete-todo">❌</button>
+					<a class="url-link" href=${
+						prefix + link.value
+					} target="_blank" rel="noopener">${link.value}</a>
+					<button data-action="delete" class="delete-link">❌</button>
 
 		</div>
 		`;
 	});
 };
 
-todosListEl.addEventListener("click", (e) => {
+//Allows us to target a specific element and to perform an action to it. In this case: delete
+linksListEl.addEventListener("click", (e) => {
 	const target = e.target;
 	const parentElement = target.parentNode;
 
-	if (parentElement.className !== "todo") return;
-
-	const todo = parentElement;
-	const todoId = Number(todo.id);
-
+	if (parentElement.className !== "link") return;
+	const link = parentElement;
+	const linkId = Number(link.id);
 	const action = target.dataset.action;
-
-	console.log(todoId, action);
-
-	action === "delete" && deleteTodo(todoId);
-
-	// console.log(todoId);
+	action === "delete" && deleteLink(linkId);
 });
 
+//Click eventlistener for deleting all links at once
 deleteAllBtn.addEventListener("click", function () {
-	let confirmDelAll = confirm("Are you sure you want delete all the leads?");
+	let confirmDelAll = confirm("Are you sure you want delete all the links?");
 	if (!confirmDelAll) return;
-	localStorage.clear();
-	todos = [];
-	renderTodos(todos);
-	console.log(todos);
+	localStorage.removeItem("links");
+	links = [];
+	renderLinks(links);
 });
 
-const deleteTodo = (todoId) => {
-	todos = todos.filter((todo, index) => index !== todoId);
-
-	renderTodos();
-	localStorage.setItem("todos", JSON.stringify(todos));
+//Function to delete a single link based on its index and ID
+const deleteLink = (linkId) => {
+	links = links.filter((todo, index) => index !== linkId);
+	renderLinks();
+	localStorage.setItem("links", JSON.stringify(links));
 };
 
-const leadsFromLocalStorage = JSON.parse(localStorage.getItem("todos"));
-if (leadsFromLocalStorage) {
-	todos = leadsFromLocalStorage;
-	renderTodos(todos);
+//Parsing the localStorage info and rendering it to the page
+const linksFromLocalStorage = JSON.parse(localStorage.getItem("links"));
+if (linksFromLocalStorage) {
+	links = linksFromLocalStorage;
+	renderLinks(links);
 }
 
+//Using the Chrome tabs API to retrieve the tab URL when clicking the Save tab button
 tabBtn.addEventListener("click", function () {
 	chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-		const url = tabs[0].url;
+		const url = removeHttp(tabs[0].url);
 		const newTabLink = {
 			id: Math.random(),
 			value: url,
 		};
-		todos.push(newTabLink);
-		console.log(tabs[0].url);
-		localStorage.setItem("todos", JSON.stringify(todos));
-		renderTodos(todos);
+		links.push(newTabLink);
+		localStorage.setItem("links", JSON.stringify(links));
+		renderLinks(links);
 	});
 });
