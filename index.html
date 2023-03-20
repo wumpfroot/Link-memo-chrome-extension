@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/x-icon" href="./favicon.png" />
+		<link rel="stylesheet" href="style.css" />
+		<title>Link Memo</title>
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1>Link Memo</h1>
+				<img src="./icon.png" alt="Icon" />
+			</header>
+			<div class="new-todo">
+				<form id="todoform">
+					<input
+						type="text"
+						name="newtodo"
+						placeholder="https://google.com"
+						id="newtodo"
+					/>
+					<div class="buttons">
+						<button class="button" type="submit" id="input-btn">
+							SAVE INPUT
+						</button>
+						<button class="button" type="button" id="tab-btn">SAVE TAB</button>
+						<button class="button" type="button" id="delete-all-btn">
+							DELETE ALL
+						</button>
+					</div>
+				</form>
+			</div>
+			<div id="todos-list"></div>
+			<footer>
+				<a target="_blank" href="https://icons8.com/icon/GyPuW1QiY1OU/link"
+					>Link</a
+				>
+				icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+			</footer>
+		</div>
+		<script src="app.js"></script>
+	</body>
+</html>
