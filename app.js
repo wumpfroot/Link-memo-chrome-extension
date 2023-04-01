@@ -53,7 +53,7 @@ const renderLinks = () => {
 			
 					<a class="url-link" href=${
 						prefix + link.value
-					} target="_blank" rel="noopener">${link.value}</a>
+					} target="_blank" rel="noopener">${link.title || link.value}</a>
 					<button data-action="delete" class="delete-link">❌</button>
 
 		</div>
@@ -100,9 +100,11 @@ if (linksFromLocalStorage) {
 tabBtn.addEventListener("click", function () {
 	chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 		const url = removeHttp(tabs[0].url);
+		const title = tabs[0].title;
 		const newTabLink = {
 			id: Math.random(),
 			value: url,
+			title: title,
 		};
 		links.push(newTabLink);
 		localStorage.setItem("links", JSON.stringify(links));
